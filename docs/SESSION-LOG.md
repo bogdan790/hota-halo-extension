@@ -71,6 +71,10 @@ npm run check          # typecheck + 99 teste + build + pack → yo3bee-hota-<ve
   scope limitat (a noastră: construită, intră live înainte de testul de self-spot pe teren). Reacția lui la brief:
   „I love the 'do not invent your own architecture'".
 
+- Decizie Bogdan (4 sep): NU cerem includerea HOTA în PoLo (app-polo, aplicația stabilă); dacă Sebastián apreciază
+  efortul, o va propune el. Dacă vine invitația: PR în `ham2k/app-polo` după pattern-ul activităților POTA/WWBOTA,
+  portând din această extensie (data file, spoturi, regula 5 indicative distincte, câmpurile ADIF).
+
 ## Ce urmează (în ordinea probabilă)
 1. Retest pe aparat: același indicativ pe bandă nouă → „New Band", contor neschimbat (fix-ul `d4236c7`, v0.1.2).
 2. Când apare catalogul Ham2K: adaugă HOTA în formatul cerut de Sebastián (manifestul are deja nume/descriere/keywords/icon).
