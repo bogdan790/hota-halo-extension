@@ -8,14 +8,14 @@
 // live in program.ts and scoring.ts; the reference code logic in
 // references.ts; the network in spots.ts, account.ts and dataFile.ts.
 
-import { activityExportHook, activityScorer, contestScorer, defineExtension, huntingExportHook } from "@ham2k/extension-sdk"
+import { activityExportHook, contestScorer, defineExtension, huntingExportHook } from "@ham2k/extension-sdk"
 
 import manifest from "../manifest.json" with { type: "json" }
 import { HotaAccount } from "./account.js"
 import { activityHook, adifFieldsHook, adifImportHook, refHandler } from "./activity.js"
 import { DATA_FILE_KEY, referencesDataFile } from "./dataFile.js"
 import { ACTIVATION_TYPE, EXTENSION_KEY, HUNTING_TYPE, ICON, PROGRAM } from "./program.js"
-import { HOTA_SCORING } from "./scoring.js"
+import { hotaScorer } from "./scoring.js"
 import { HotaSpots } from "./spots.js"
 
 export const HUNTER_EXPORT_KEY = `${EXTENSION_KEY}-hunter`
@@ -62,7 +62,7 @@ defineExtension({
 
     // `scope` keeps this scorer out of operations with no HOTA reference.
     registerHook("scoring", {
-      hook: contestScorer(activityScorer(HOTA_SCORING), {
+      hook: contestScorer(hotaScorer(), {
         scope: { refTypes: [ACTIVATION_TYPE, HUNTING_TYPE], huntingRefTypes: [HUNTING_TYPE] },
       }),
       key: EXTENSION_KEY,

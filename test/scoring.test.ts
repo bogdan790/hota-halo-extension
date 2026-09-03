@@ -131,3 +131,41 @@ describe("live path", () => {
     expect(live).toEqual({ notices: [], alerts: ["duplicate"] })
   })
 })
+
+describe("live path — the QSO being typed has no time yet", () => {
+  it("a repeat typed right now is a duplicate, not a new day", async () => {
+    const logged = CALLS.slice(0, 3).map((call, i) => qso({ call, at: at(i) }))
+    const now = Date.now()
+    const untimed = { ...qso({ call: "YO4RDW" }), startAt: undefined, startAtMillis: undefined }
+    // The log sits on today's UTC day, like the real thing.
+    const today = logged.map((q) => ({ ...q, startAtMillis: now - 5 * 60_000 - (3 - Number(q.uuid.slice(4)) % 3) * 1000, startAt: undefined }))
+    const live = await scoring.scoreQso({ operation: operation(), qso: untimed, resumeFrom: (await score(today)).scoresheet }, ctx())
+    expect(live).toEqual({ notices: [], alerts: ["duplicate"] })
+    const fresh = await scoring.scoreQso({ operation: operation(), qso: { ...untimed, their: { call: "F5GHI" } }, resumeFrom: (await score(today)).scoresheet }, ctx())
+    expect(fresh).toEqual({ notices: [], alerts: [] })
+  })
+
+  it("a QSO with only an ISO time is placed on that day", async () => {
+    const logged = [qso({ call: "YO4RDW", at: at(0, 14) })]
+    const nextDay = { ...qso({ call: "YO4RDW" }), startAtMillis: undefined, startAt: "2026-08-15T10:00:00Z" }
+    const live = await scoring.scoreQso({ operation: operation(), qso: nextDay, resumeFrom: (await score(logged)).scoresheet }, ctx())
+    expect(live).toEqual({ notices: ["newDay"], alerts: [] })
+  })
+
+  it("the spots panel judges many untimed candidates at once", async () => {
+    const now = Date.now()
+    const logged = [{ ...qso({ call: "YO4RDW" }), startAtMillis: now - 60_000, startAt: undefined }]
+    const result = await scoring.scoreCandidates(
+      {
+        operation: operation(),
+        candidates: [
+          { key: "a", qso: { their: { call: "YO4RDW" }, band: "40m", mode: "CW" } },
+          { key: "b", qso: { their: { call: "DL3KZA" }, band: "40m", mode: "CW" } },
+        ],
+        resumeFrom: (await score(logged)).scoresheet,
+      },
+      ctx(),
+    )
+    expect(result).toEqual({ a: { notices: [], alerts: ["duplicate"] }, b: { notices: [], alerts: [] } })
+  })
+})
