@@ -22,7 +22,10 @@ Grab `yo3bee-hota-<version>.h2kext` from the
 [releases](https://github.com/bogdan790/hota-halo-extension/releases) (or
 build one, below), then in the app: **Settings → Extensions → Install from
 file…**. The app shows what the bundle asks for — one domain, `cqhota.app` —
-before anything is written.
+before anything is written. Dropping the `.h2kext` onto the app window works
+too. On Linux, if the file dialog does not lead to an install prompt, unzip the
+bundle into `~/.local/share/com.ham2k.logger.next/extensions/yo3bee-hota/` and
+restart the app (see `docs/BETA-TEST-PLAN.md` §1).
 
 To post spots, add your cqhota.app API key under **Settings → Accounts →
 HOTA**. The key is on your profile page at cqhota.app. Everything else — the

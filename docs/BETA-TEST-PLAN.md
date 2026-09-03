@@ -22,7 +22,18 @@ project root, packer output listing one domain: `cqhota.app`.
 
 ## 1. Install
 
-**Settings → Extensions → Install from file…** → the `.h2kext`.
+**Settings → Extensions → Install from file…** → the `.h2kext`, or drag the
+file onto the app window.
+
+Observed on Linux (26.9.0 build 160, run inside a distrobox): neither the file
+chooser nor the `.h2kext` command-line argument produced an install dialog.
+Unzipping the bundle by hand into the app's extension directory worked — the
+app picks it up on restart and lists it as *Installed*:
+
+```sh
+mkdir -p ~/.local/share/com.ham2k.logger.next/extensions/yo3bee-hota
+unzip yo3bee-hota-0.1.0.h2kext -d ~/.local/share/com.ham2k.logger.next/extensions/yo3bee-hota
+```
 
 Expected: the consent sheet lists `cqhota.app`; after the runtime restarts,
 *HOTA — History On The Air* appears under Activities, enabled, with the
@@ -35,12 +46,9 @@ Expected: the consent sheet lists `cqhota.app`; after the runtime restarts,
 Expected: *HOTA references* is listed, downloads, and reports a count around
 500 (the export's `count` on 2026-09-03 was 490).
 
-**⚠ verify** — `jsonOptions.rootPath: "references"` is how this extension
-tells the host that the export wraps its array
-(`{program, version, count, references: [...]}`). If the host expects a
-different spelling of that path, zero rows will load and every step below
-that needs a name will show *Unknown HOTA reference*. The fix is one line in
-`src/dataFile.ts`.
+**✅ verified 2026-09-03** on halo-next 26.9.0 (160), Linux: the list loads and
+`jsonOptions.rootPath: "references"` is the right spelling — `0123` resolves
+to *RO-H0123 · Princely Court Piatra Neamț · NT*.
 
 ## 3. Add a site to an operation
 
@@ -119,6 +127,10 @@ into the `account` hook's own extension for *some* categories, posting will
 always ask to connect; `apiKeyFrom()` in `src/account.ts` is the single
 place to adapt.
 
+**✅ verified 2026-09-03**: scoped search `yo3bee-hota: 0123` → the site with
+name and county; the operation is titled *YO3BEE at RO-H0123 / Princely Court
+Piatra Neamț*.
+
 ## 6. Export, then upload
 
 Exports panel. Expected options:
@@ -128,6 +140,10 @@ Exports panel. Expected options:
   one per activated site.
 - For an operation with hunted HOTA refs but no activation: **ADIF for HOTA
   hunter**.
+
+**✅ verified 2026-09-03**: option *ADIF for HOTA RO-H0123*, file
+`2026-09-03 YO3BEE at RO-H0123.adi`, every record carrying
+`<MY_SIG:4>HOTA<MY_SIG_INFO:8>RO-H0123<MY_HOTA_REF:8>RO-H0123`.
 
 Open the file. Expected on every record:
 
