@@ -1,0 +1,54 @@
+{
+  "name": "hota-halo-extension",
+  "version": "0.1.0",
+  "description": "HOTA — History On The Air — activity extension for the Ham2K Logger (HaLo): references, spots, activation scoring and ADIF exports for cqhota.app",
+  "keywords": ["ham2k", "halo", "ham radio", "amateur radio", "hota", "history on the air", "extension", "cqhota"],
+  "license": "MIT",
+  "author": "Bogdan Pavel, YO3BEE",
+  "homepage": "https://cqhota.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bogdan790/hota-halo-extension.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bogdan790/hota-halo-extension/issues"
+  },
+  "type": "module",
+  "files": [
+    "manifest.json",
+    "src",
+    "build",
+    "build.mjs",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "pack": "h2kext-pack build -o yo3bee-hota-$npm_package_version.h2kext",
+    "typecheck": "tsc --noEmit",
+    "pretest": "node build.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm test && npm run pack",
+    "prepublishOnly": "npm run check"
+  },
+  "dependencies": {
+    "@ham2k/extension-sdk": "^0.2.0"
+  },
+  "devDependencies": {
+    "@ham2k/extension-tools": "^0.2.0",
+    "@ham2k/lib-country-files": "^1.0.0",
+    "@ham2k/lib-format-tools": "^1.2.0",
+    "@ham2k/lib-geo-tools": "^1.1.1",
+    "@ham2k/lib-operation-data": "^1.0.0",
+    "esbuild": "^0.25.0",
+    "i18next": "^23.0.0",
+    "liquidjs": "^10.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "key": "yo3bee-hota",
+  "name": "HOTA — History On The Air",
+  "shortName": "HOTA",
+  "version": "0.1.0",
+  "description": "Activate and hunt historic sites over 200 years old: HOTA references, spots, activation scoring and ADIF exports for cqhota.app",
+  "category": "activity",
+  "enabledByDefault": true,
+  "icon": "castle",
+  "accentColor": "#9184D9",
+  "api": 1,
+  "keywords": ["hota", "history", "castle", "monument", "activation", "hunting", "cqhota"],
+  "hooks": [
+    "account",
+    "activity",
+    "adifFields",
+    "adifImport",
+    "dataFile",
+    "export",
+    "ref:hota",
+    "ref:hotaActivation",
+    "scoring",
+    "spots"
+  ],
+  "domains": ["cqhota.app"],
+  "sharedDependencies": {
+    "@ham2k/lib-callsigns": "^1.0.0",
+    "@ham2k/lib-country-files": "^1.0.0",
+    "@ham2k/lib-dxcc-data": "^1.0.0",
+    "@ham2k/lib-format-tools": "^1.0.0",
+    "@ham2k/lib-geo-tools": "^1.0.0",
+    "@ham2k/lib-operation-data": "^1.0.0",
+    "i18next": "^23.0.0",
+    "liquidjs": "^10.0.0"
+  },
+  "translations": {
+    "ro": {
+      "name": "HOTA — History On The Air",
+      "description": "Activează și vânează vestigii istorice de peste 200 de ani: referințe HOTA, spoturi, contor de activare și export ADIF pentru cqhota.app"
+    }
+  }
+}
