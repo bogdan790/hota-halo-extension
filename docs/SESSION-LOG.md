@@ -75,6 +75,14 @@ npm run check          # typecheck + 99 teste + build + pack → yo3bee-hota-<ve
   efortul, o va propune el. Dacă vine invitația: PR în `ham2k/app-polo` după pattern-ul activităților POTA/WWBOTA,
   portând din această extensie (data file, spoturi, regula 5 indicative distincte, câmpurile ADIF).
 
+- Închiderea conversației cu Sebastián (00:54): „that's the idea". Nimic de răspuns; mingea e la el (fix-ul de
+  instalare .h2kext, catalogul, eventual PoLo).
+- Sesiunea s-a încheiat pe 4 sep, ~01:00. Stare la final: extensia v0.1.2 pe GitHub (release cu .h2kext) și npm;
+  99 de teste verzi; HaLo instalat local (distrobox) cu extensia dezarhivată manual; serverul cqhota cu cheia de
+  integrare comisă pe main, NEDEPLOYATĂ (decizia din secțiunea de mai sus); toată documentația în repo:
+  `CLAUDE.md`, `AGENTS.md`, `README.md`, `docs/BRIEF.ro.md`, `docs/PROMPT.md`, `docs/BETA-TEST-PLAN.md`,
+  `docs/TEST-REPORT-2026-09-03.md`, acest jurnal.
+
 ## Ce urmează (în ordinea probabilă)
 1. Retest pe aparat: același indicativ pe bandă nouă → „New Band", contor neschimbat (fix-ul `d4236c7`, v0.1.2).
 2. Când apare catalogul Ham2K: adaugă HOTA în formatul cerut de Sebastián (manifestul are deja nume/descriere/keywords/icon).
