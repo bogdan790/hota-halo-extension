@@ -3,3 +3,4 @@ build/
 *.h2kext
 .DS_Store
 npm-debug.log*
+.sentry-native/
