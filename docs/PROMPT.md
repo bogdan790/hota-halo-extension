@@ -72,3 +72,80 @@ Do NOT invent your own architecture. Use the test harness from extension-tools i
   contacts where HOTA counts callsigns — both fixed the same night, with tests.
 - Where the host contract could not be observed (HaLo's own repo is not public), the extension flags it in
   the test plan as "verify" and isolates each guess in one function.
+
+---
+
+# Reusable brief for other programs
+
+The HOTA brief above, generalised and polished with what the tests and the first device run taught us.
+Point your coding agent at the two packages, have it read them fully (the SDK ships its own `AGENTS.md`,
+`docs/` and four worked samples; `k2hrc-llota` is the shape you want), then hand it this:
+
+> Build a HaLo activity extension for [PROGRAM NAME] ([program URL]), in its own git repo, MIT licensed.
+> Follow the SDK's activity-extension shape exactly: scaffold with `h2kext-init <callsign>-<name>`, build on
+> `referenceActivity()`, `activityScorer()`, `activityExportHook()`, `huntingExportHook()` and
+> `activityAdifImport()`. Do not invent your own architecture.
+>
+> **References**: load the program's reference list from our public API as a `dataFile`:
+> [references endpoint URL + format]. If the JSON wraps its array, set `jsonOptions.rootPath`. Implement code
+> repair (lowercase, missing dash or leading zeros → canonical code), search by number, full code, prefix and
+> name, and nearest-first suggestions from coordinates. The host's text-search semantics are undocumented, so
+> for the numeric shortcut query both by position and by text and filter locally. Retired references get
+> `flags: 0` and are never offered. Do not hardcode countries or anything else the API provides.
+>
+> **Scoring**: our activation rule is [N distinct callsigns per reference per UTC day, any band/mode]. The
+> SDK's scorer counts contacts (POTA's rule), so wrap it: judge duplicates on day+band+mode (a repeat on a new
+> band or mode is a contact with a "New Band"/"New Mode" notice), but count distinct callsigns for the
+> activation tally. Support [program]-to-[program] credit and multi-reference (n-fer) operations. Known trap:
+> the live QSO being typed arrives without `startAtMillis`; default it to the app clock (`Date.now()` in the
+> sandbox follows it), or every repeat reads as a new UTC day.
+>
+> **ADIF export**: emit `MY_SIG`/`MY_SIG_INFO`/`MY_[PROGRAM]_REF` for the activation and
+> `SIG`/`SIG_INFO`/`[PROGRAM]_REF` per hunted reference, one record per hunted reference, exactly as our upload
+> parser expects. Implement import back and prove it with an export → import round-trip test. Never claim
+> another program's `SIG`.
+>
+> **Spots**: read our public spots feed [spots endpoint] and map rows to HaLo spots carrying the hunted ref
+> type; drop QRT/ended rows at the source. Post self-spots and re-spots via [spot POST endpoint] authenticated
+> with a per-user integration key (scoped: spot + own stats only, never logs or account), stored through the
+> SDK's `account` hook, never in a settings field. Test the key against a lightweight authenticated endpoint
+> before saving; without a key, return a `userMessage` with an account action instead of touching the network.
+>
+> **TDD everything**: run the real extension against a fake kernel in tests (`globalThis.__polo` with an
+> in-memory reference table, a scripted `fetch` and a hook registry); target ~100 tests across references,
+> suggest, scoring, adif, spots and manifest registration. Ship with `npm run check` = typecheck + tests + build
+> with `@ham2k/extension-tools` + clean `h2kext-pack`. No secrets, and no private copy of host libraries in the
+> bundle (declare them in `sharedDependencies`).
+>
+> **Manifest**: `<callsign>-<name>` key, category `activity`, one domain, distributable. Every user-visible
+> string through the SDK translator, in English plus your language.
+>
+> **Deliver**: a GitHub release with the `.h2kext` attached, an npm package, and a step-by-step beta test plan
+> that marks every host-contract guess as "verify".
+
+Then, before you share anything, **run it on a real Ham2K Logger**. Our first device run found two bugs the
+tests could not (the untimed live QSO and contacts-vs-callsigns), both fixed the same night. On current builds
+"Install from file…" may show no dialog; unzipping the bundle into the app's `extensions/<key>/` folder and
+restarting works meanwhile.
+
+## What your server needs first
+
+The extension only reads and spots. Everything else stays on your site.
+
+1. **Public read API**, no key: the full reference list (JSON or CSV, with code, name, coordinates, status)
+   and the spots feed (callsign, reference, frequency, mode, comment, time, a QRT/ended marker).
+2. **A per-user integration key for posting spots**, separate from any session token:
+   - generated (and regenerated/revoked) by the user in their account page, shown in clear only once, stored
+     hashed on the server;
+   - sent as a header (ours: `X-Integration-Key`) on `POST /spots`;
+   - **scoped**: it may post spots and read the user's own summary, nothing else — logs, account and admin
+     routes must reject it;
+   - plus one lightweight authenticated `GET` (ours: `/me/summary`, returning at least `{ callsign }`) so the
+     app's account dialog can say "Connected as …" before saving;
+   - its own rate limit per key.
+   Ours, as a working example: https://cqhota.app/api-docs.
+
+Extension source for reference: https://github.com/bogdan790/hota-halo-extension —
+`docs/BETA-TEST-PLAN.md` is the device scenario, `docs/TEST-REPORT-2026-09-03.md` what the first run found.
+
+73, Bogdan YO3BEE
