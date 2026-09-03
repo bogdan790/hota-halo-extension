@@ -5,7 +5,7 @@ Read `AGENTS.md` first (project rules + the SDK's own `node_modules/@ham2k/exten
 extension kernel in `test/kernel.ts`. Strings go in `src/i18n/en.json` **and** `ro.json`.
 
 ## State on 2026-09-03 — project still in progress
-- Published: GitHub release v0.1.2 (`yo3bee-hota-0.1.2.h2kext` attached); npm `hota-halo-extension@0.1.1` (0.1.2 publish pending — Bogdan runs it).
+- Published: GitHub release v0.1.2 (`yo3bee-hota-0.1.2.h2kext` attached); npm `hota-halo-extension@0.1.2`.
   Scoring fix `d4236c7` (distinct callsigns, POTA-style dupes) is on `main` but **not yet released** → released as v0.1.2 on 2026-09-04.
   npm publish must be run by Bogdan from an interactive terminal (npm 2FA via passkey).
 - Verified on a real Ham2K Logger (halo-next 26.9.0 build 160, Linux): data file loads (`rootPath: "references"`
