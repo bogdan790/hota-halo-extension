@@ -1,6 +1,8 @@
 # hota-halo-extension — notes for Claude Code
 
-Read `AGENTS.md` first (project rules + the SDK's own `node_modules/@ham2k/extension-sdk/AGENTS.md`).
+Read `AGENTS.md` first (project rules + the SDK's own `node_modules/@ham2k/extension-sdk/AGENTS.md`), then
+**`docs/SESSION-LOG.md`** — the project's memory: what was done, what was decided, what Sebastián said, how to resume
+on a new machine. The original brief (Romanian) is `docs/BRIEF.ro.md`. Keep the log updated at the end of every session.
 `npm run check` is the whole gate (typecheck + vitest + build + pack). Tests run against the fake
 extension kernel in `test/kernel.ts`. Strings go in `src/i18n/en.json` **and** `ro.json`.
 
