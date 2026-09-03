@@ -62,6 +62,11 @@ npm run check          # typecheck + 99 teste + build + pack → yo3bee-hota-<ve
   următoarea sesiune de teste HaLo (înainte de self-spot pe teren și înainte de distribuția prin catalog). Orice alt deploy
   pe cqhota o duce automat în producție → Claude Code trebuie să anunțe explicit. Scris în `HOTA.app/CLAUDE.md`.
 
+- Sebastián: „can you share the prompt you used? there's a couple of other programs that might be interested in
+  following your lead here". Răspuns: `docs/PROMPT.md` — brief-ul original tradus în engleză + o variantă
+  generalizată pentru alte programe (cu lecțiile din teste și de pe aparat) + secțiunea „What your server needs
+  first" (API public de citire + cheie de integrare per user, cu scope limitat, pentru self-spot). Trimis link-ul.
+
 ## Ce urmează (în ordinea probabilă)
 1. Retest pe aparat: același indicativ pe bandă nouă → „New Band", contor neschimbat (fix-ul `d4236c7`, v0.1.2).
 2. Când apare catalogul Ham2K: adaugă HOTA în formatul cerut de Sebastián (manifestul are deja nume/descriere/keywords/icon).
