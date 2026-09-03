@@ -152,7 +152,7 @@ describe("spots hook", () => {
     const result = await spots.fetchSpots({}, ctx())
     expect(result.length).toBe(1)
     expect(kernel.fetches[0]).toMatchObject({ url: "https://cqhota.app/api/v1/spots", method: "GET" })
-    expect(kernel.fetches[0].headers["X-Api-Key"]).toBeUndefined()
+    expect(kernel.fetches[0].headers["X-Integration-Key"]).toBeUndefined()
   })
 
   it("answers with nothing offline, on an error, or when the server is down", async () => {
@@ -189,7 +189,7 @@ describe("spots hook", () => {
     expect(kernel.fetches[0]).toMatchObject({
       url: "https://cqhota.app/api/v1/spots",
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Api-Key": "secret-key" },
+      headers: { "Content-Type": "application/json", "X-Integration-Key": "secret-key" },
     })
     expect(JSON.parse(kernel.fetches[0].body!)).toEqual({
       reference: "RO-H0142",
@@ -222,13 +222,13 @@ describe("spots hook", () => {
   })
 
   it("the account test names who the key belongs to", async () => {
-    expect(await account.testCredentials({ apiKey: "" }, ctx())).toBe("Enter your cqhota.app API key")
+    expect(await account.testCredentials({ apiKey: "" }, ctx())).toBe("Enter your cqhota.app integration API key")
     kernel.respondWith(({ headers }) =>
-      headers["X-Api-Key"] === "good" ? { status: 200, body: '{"callsign":"YO3BEE","role":"user"}' } : { status: 403, body: '{"error":"invalid API key"}' },
+      headers["X-Integration-Key"] === "good" ? { status: 200, body: '{"callsign":"YO3BEE","refs_activated":31}' } : { status: 403, body: '{"error":"invalid integration key"}' },
     )
     expect(await account.testCredentials({ apiKey: "good" }, ctx())).toBe("✅ Connected as YO3BEE")
-    expect(await account.testCredentials({ apiKey: "bad" }, ctx())).toBe("cqhota.app rejected this API key")
-    expect(kernel.fetches[0]).toMatchObject({ url: "https://cqhota.app/api/v1/me", headers: { "X-Api-Key": "good" } })
+    expect(await account.testCredentials({ apiKey: "bad" }, ctx())).toBe("cqhota.app rejected this integration key")
+    expect(kernel.fetches[0]).toMatchObject({ url: "https://cqhota.app/api/v1/me/summary", headers: { "X-Integration-Key": "good" } })
     expect(account.kvKey).toBe("yo3bee-hota")
     expect((await account.fields({}, ctx()))[0]).toMatchObject({ key: "apiKey", type: "secret" })
   })

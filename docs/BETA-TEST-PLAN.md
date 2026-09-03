@@ -107,9 +107,15 @@ Tap **spot myself** with no account. Expected: a dialog *Connect your
 cqhota.app account to post HOTA spots* with a *Connect* button opening the
 Accounts panel.
 
-**Settings → Accounts → HOTA**: paste an API key from a cqhota.app profile,
-tap test. Expected: `✅ Connected as <CALL>`; a wrong key says *cqhota.app
-rejected this API key*.
+**Settings → Accounts & Services → HOTA**: paste the integration API key
+generated at cqhota.app → **My Account → Integration API key**, tap test.
+Expected: `✅ Connected as <CALL>`; a wrong key says *cqhota.app rejected this
+integration key*.
+
+**⏳ pending server side** — the integration key (`X-Integration-Key`, scoped
+to `POST /api/v1/spots` and `GET /api/v1/me/summary`) is being added to
+cqhota.app; until it is deployed the account cannot be connected and the
+spot-posting steps below wait. Everything else in this plan works without it.
 
 Spot yourself on 14.062 CW with a comment. Expected: *Spotted on HOTA at
 RO-H0235*; the spot appears on cqhota.app's Spots page within seconds.
@@ -121,7 +127,7 @@ Work a station that has a `hota` ref on the QSO and tap **re-spot**.
 Expected: `POST /api/v1/spots` with `source: respot` and `for_activator`
 set to their call; *Re-spotted <CALL> on HOTA at <REF>*.
 
-**⚠ verify** — the API key reaches the spots hook through
+**⚠ verify** — the integration key reaches the spots hook through
 `ctx.account.credentials.apiKey`. If the host only injects `ctx.account`
 into the `account` hook's own extension for *some* categories, posting will
 always ask to connect; `apiKeyFrom()` in `src/account.ts` is the single

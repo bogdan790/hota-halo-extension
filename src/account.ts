@@ -1,9 +1,9 @@
 // Copyright ©️ 2026 Bogdan Pavel, YO3BEE — HOTA, History On The Air
 // SPDX-License-Identifier: MIT
 //
-// The operator's cqhota.app API key. Reading HOTA needs no key at all; only
-// posting a spot does, and the key is the operator's own, issued on their
-// profile page. It lives in the platform keychain through the `account`
+// The operator's cqhota.app integration key. Reading HOTA needs no key at
+// all; only posting a spot does, and the key is the operator's own, generated
+// under My Account → Integration API key. It lives in the platform keychain through the `account`
 // hook — never in a settings field, never in this repository.
 
 import { host } from "@ham2k/extension-sdk"
@@ -13,7 +13,11 @@ import { tFor } from "./i18n.js"
 import { API_BASE, EXTENSION_KEY } from "./program.js"
 
 export const API_KEY_FIELD = "apiKey"
-export const API_KEY_HEADER = "X-Api-Key"
+/// The integration key cqhota.app issues per user under My Account →
+/// Integration API key. Its scope is deliberately narrow — posting spots and
+/// reading the operator's own summary — which is all this extension needs.
+export const API_KEY_HEADER = "X-Integration-Key"
+export const CREDENTIALS_CHECK_URL = `${API_BASE}/me/summary`
 
 /// The key the operator stored, or undefined when the account is not set up.
 export function apiKeyFrom(ctx: HookContext): string | undefined {
@@ -45,7 +49,7 @@ export const HotaAccount: AccountHook = {
     if (!key) return t("accountMissingKey")
 
     try {
-      const response = await host.fetch(`${API_BASE}/me`, { headers: { [API_KEY_HEADER]: key } })
+      const response = await host.fetch(CREDENTIALS_CHECK_URL, { headers: { [API_KEY_HEADER]: key } })
       if (response.status === 401 || response.status === 403) return t("accountInvalidKey")
       if (response.status !== 200) return t("accountUnreachable", { message: `HTTP ${response.status}` })
       const me = parseJson(response.body)

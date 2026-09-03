@@ -27,9 +27,11 @@ too. On Linux, if the file dialog does not lead to an install prompt, unzip the
 bundle into `~/.local/share/com.ham2k.logger.next/extensions/yo3bee-hota/` and
 restart the app (see `docs/BETA-TEST-PLAN.md` §1).
 
-To post spots, add your cqhota.app API key under **Settings → Accounts →
-HOTA**. The key is on your profile page at cqhota.app. Everything else — the
-reference list, the spot feed — is public and needs no account.
+To post spots, add your cqhota.app **integration API key** under **Settings →
+Accounts & Services → HOTA**. Generate it at cqhota.app under **My Account →
+Integration API key**; it can only post spots and read your own stats.
+Everything else — the reference list, the spot feed — is public and needs no
+account.
 
 ## Building it
 
@@ -84,8 +86,8 @@ docs/BETA-TEST-PLAN.md   the step-by-step scenario for a HaLo beta integration
 | `adifFields` | `yo3bee-hota` | `MY_SIG`/`MY_SIG_INFO`/`MY_HOTA_REF` for the activation; `SIG`/`SIG_INFO`/`HOTA_REF` per hunted site, one record per site |
 | `adifImport` | `yo3bee-hota` | the inverse: reads those fields back, repairing codes as it goes; never claims another program's `SIG` |
 | `export` | `yo3bee-hota`, `yo3bee-hota-hunter` | one ADIF per activated site; a hunter log when nothing is being activated |
-| `spots` | `yo3bee-hota` | `GET /api/v1/spots` → Spots panel; `POST /api/v1/spots` for self-spot (`source: self`) and re-spot (`source: respot`) |
-| `account` | `yo3bee-hota` | the API key, one `secret` field, tested against `GET /api/v1/me` |
+| `spots` | `yo3bee-hota` | `GET /api/v1/spots` → Spots panel; `POST /api/v1/spots` with `X-Integration-Key` for self-spot (`source: self`) and re-spot (`source: respot`) |
+| `account` | `yo3bee-hota` | the integration key, one `secret` field, tested against `GET /api/v1/me/summary` |
 
 ### The rules, and where they come from
 
@@ -122,6 +124,10 @@ The feed maps straight onto HaLo spots, each carrying a `hota` reference so
 that tapping one fills the hunted-site field. A spot marked `ended`, or whose
 latest comment contains the word `QRT`, is dropped at the source. Posting
 needs the account; without one the operator is offered the *Connect* action.
+
+The key travels as `X-Integration-Key`. The account test calls
+`GET /api/v1/me/summary` and expects a JSON object with the operator's
+`callsign` — the contract the cqhota.app integration-key feature provides.
 A self-spot names the operation's first HOTA reference — the server spaces out
 spots on different references, so an n-fer is announced one site at a time.
 Coordinates are not sent with a spot, so the server's 500 m check does not
