@@ -67,6 +67,10 @@ npm run check          # typecheck + 99 teste + build + pack → yo3bee-hota-<ve
   generalizată pentru alte programe (cu lecțiile din teste și de pe aparat) + secțiunea „What your server needs
   first" (API public de citire + cheie de integrare per user, cu scope limitat, pentru self-spot). Trimis link-ul.
 
+- Trimis lui Sebastián și nota că self-spot-ul din HaLo cere, pe serverul fiecărui program, o cheie per user cu
+  scope limitat (a noastră: construită, intră live înainte de testul de self-spot pe teren). Reacția lui la brief:
+  „I love the 'do not invent your own architecture'".
+
 ## Ce urmează (în ordinea probabilă)
 1. Retest pe aparat: același indicativ pe bandă nouă → „New Band", contor neschimbat (fix-ul `d4236c7`, v0.1.2).
 2. Când apare catalogul Ham2K: adaugă HOTA în formatul cerut de Sebastián (manifestul are deja nume/descriere/keywords/icon).
