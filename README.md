@@ -100,14 +100,13 @@ one shape assumption, and it deliberately does not enumerate countries.
 
 **The one program constant** is `QSOS_TO_ACTIVATE = 5`: an activation is
 valid with at least five QSOs with *distinct callsigns* per reference per UTC
-day, on any band or mode. The scorer is configured `uniquePer: ["day"]`,
-which is what makes a station already worked today a duplicate on any other
-band or mode. cqhota.app remains the authority when the log is uploaded.
-
-Known edge: a repeat QSO with a station now at a *different* HOTA site is a
-dupe for the counter (it is the same callsign) even though the ADIF carries
-both HOTA-to-HOTA records and the server credits both. Chosen so that the
-activation counter never reads `5/5` on four callsigns.
+day, on any band or mode. The SDK's activity scorer counts contacts, the way
+POTA does, so `src/scoring.ts` wraps it: duplicates are judged like every
+other program (same station, same band and mode, same UTC day — a new band
+is a real contact and the app says *New Band*), while the activation counter
+reads the *distinct callsigns* worked at each reference. A station worked
+again on a new band moves the hunter's credit, not the counter. cqhota.app
+remains the authority when the log is uploaded.
 
 ### The numeric search
 

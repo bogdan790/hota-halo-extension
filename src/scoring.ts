@@ -6,6 +6,7 @@
 // this is the live counter on the logging screen ("HOTA 3/5").
 
 import { activityScorer, host } from "@ham2k/extension-sdk"
+import { fmtInteger } from "@ham2k/lib-format-tools"
 import type { ActivityScoresheet, ActivityScoringRules, ContestScorer, JSONValue } from "@ham2k/extension-sdk"
 
 import { tFor } from "./i18n.js"
@@ -21,13 +22,12 @@ export const HOTA_SCORING: ActivityScoringRules = {
   // carry more than one HOTA reference, and a hunted QSO may credit more than
   // one. Each reference still needs its own five callsigns.
   allowsMultipleReferences: true,
-  // The rule is five DISTINCT CALLSIGNS per UTC day, any band, any mode. So a
-  // station already worked today counts again only tomorrow — a new band or
-  // mode does not make it a new contact for HOTA. (A repeat with a station
-  // now at a DIFFERENT HOTA site is also a dupe for the counter; the ADIF
-  // export still writes both HOTA-to-HOTA records, and the server credits
-  // both on upload.)
-  uniquePer: ["day"],
+  // What makes a repeat contact a DUPLICATE — the same as every other
+  // program: the same station on the same band and mode, the same UTC day.
+  // A new band or mode is a legitimate contact (the hunter gets a new band
+  // credit; the app says "New Band"). What it is NOT is a new callsign: the
+  // activation counter below counts distinct callsigns, so it does not move.
+  uniquePer: ["day", "band", "mode"],
   activates: "daily",
   refNoun: (ctx) => tFor(ctx)("referenceNoun"),
   refNounPlural: (ctx) => tFor(ctx)("referenceNounPlural"),
@@ -53,19 +53,99 @@ export function qsoMillis(qso: Record<string, JSONValue>): number {
 
 let reportedMissingTime = false
 
-/// The SDK's activity scorer, with a time on every QSO it judges.
-export function hotaScorer(): ContestScorer<ActivityScoresheet> {
+/// A HOTA scoresheet: the SDK's, plus the callsigns worked per activated
+/// reference — all time and today — which is what the activation rule
+/// actually counts.
+export type HotaScoresheet = ActivityScoresheet & {
+  callsByRef: Record<string, Record<string, 1>>
+  dayCallsByRef: Record<string, Record<string, 1>>
+}
+
+function activationRefsOf(operation: Record<string, JSONValue>): string[] {
+  const refs = Array.isArray(operation.refs) ? operation.refs : []
+  return refs
+    .map((r) => (r && typeof r === "object" && !Array.isArray(r) ? r : null))
+    .filter((r): r is Record<string, JSONValue> => r !== null && r.type === ACTIVATION_TYPE && typeof r.ref === "string" && r.ref !== "")
+    .map((r) => String(r.ref))
+}
+
+function distinctCounts(byRef: Record<string, Record<string, 1>>): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const [ref, calls] of Object.entries(byRef)) out[ref] = Object.keys(calls).length
+  return out
+}
+
+/// The SDK's activity scorer, with two HOTA corrections on top:
+///
+///  - every QSO it judges has a time (see `qsoMillis`);
+///  - the activation tally counts DISTINCT CALLSIGNS per reference per UTC
+///    day, not contacts. The SDK's rule ("n QSOs, unique per band/mode/day")
+///    is POTA's; HOTA's is five callsigns, on any band or mode. So a station
+///    worked again on a new band is a fine contact — not a dupe, and the app
+///    says "New Band" — but the counter reads the same until a new callsign
+///    is logged.
+export function hotaScorer(): ContestScorer<HotaScoresheet> {
   const base = activityScorer(HOTA_SCORING)
+  const threshold = QSOS_TO_ACTIVATE
   return {
-    ...base,
+    startScoresheet(args, ctx) {
+      return { ...base.startScoresheet(args, ctx), callsByRef: {}, dayCallsByRef: {} }
+    },
+
     scoreQso(args, ctx) {
       const millis = qsoMillis(args.qso)
-      if (millis === args.qso.startAtMillis) return base.scoreQso(args, ctx)
-      if (!reportedMissingTime) {
+      if (millis !== args.qso.startAtMillis && !reportedMissingTime) {
         reportedMissingTime = true
         host.log(`scoring: a QSO arrived without a usable time (startAtMillis=${JSON.stringify(args.qso.startAtMillis)}, startAt=${JSON.stringify(args.qso.startAt)}); judging it as of now`)
       }
-      return base.scoreQso({ ...args, qso: { ...args.qso, startAtMillis: millis } }, ctx)
+      const qso = millis === args.qso.startAtMillis ? args.qso : { ...args.qso, startAtMillis: millis }
+      const sheet = args.scoresheet
+      if (args.isNewDay) sheet.dayCallsByRef = {}
+
+      const result = base.scoreQso({ ...args, qso }, ctx)
+      const out = result.scoresheet as HotaScoresheet
+      out.callsByRef = sheet.callsByRef ?? {}
+      out.dayCallsByRef = sheet.dayCallsByRef ?? {}
+
+      const their = qso.their && typeof qso.their === "object" && !Array.isArray(qso.their) ? (qso.their as Record<string, JSONValue>) : {}
+      const call = typeof their.call === "string" ? their.call.trim().toUpperCase() : ""
+      if (call && !result.score.dupe) {
+        for (const ref of activationRefsOf(args.operation)) {
+          ;(out.callsByRef[ref] ??= {})[call] = 1
+          ;(out.dayCallsByRef[ref] ??= {})[call] = 1
+        }
+      }
+      return { scoresheet: out, score: result.score }
+    },
+
+    summarizeScore(args, ctx) {
+      const tallies = base.summarizeScore(args, ctx)
+      const activation = tallies.activation
+      if (!activation) return tallies
+
+      const perDay = args.scope === "day"
+      const counts = distinctCounts(perDay ? args.scoresheet.dayCallsByRef ?? {} : args.scoresheet.callsByRef ?? {})
+      // A reference the operation carries but nobody has been worked at yet
+      // still shows, at zero — the SDK lists it the same way.
+      for (const ref of Object.keys((activation.activatedRefs as Record<string, number> | undefined) ?? {})) counts[ref] ??= 0
+      const refs = Object.keys(counts).sort()
+      if (refs.length === 0) return tallies
+
+      const lowest = Math.min(...refs.map((ref) => counts[ref]))
+      const activated = lowest >= threshold
+      const summary = !activated
+        ? `${fmtInteger(lowest)}/${fmtInteger(threshold)}`
+        : refs.length < 6
+          ? `${fmtInteger(lowest)} ${"\u2713".repeat(refs.length)}`
+          : `${fmtInteger(lowest)} \u2713 x ${fmtInteger(refs.length)}`
+      const longSummary = refs
+        .map((ref) => (counts[ref] >= threshold ? `\u2705 **${ref}: ${fmtInteger(counts[ref])}**` : `\u274C ${ref}: ${fmtInteger(counts[ref])}/${fmtInteger(threshold)}`))
+        .join("\n")
+
+      return {
+        ...tallies,
+        activation: { ...activation, activatedRefs: counts, activated, summary, longSummary },
+      }
     },
   }
 }

@@ -48,13 +48,31 @@ describe("activation — five distinct callsigns", () => {
     expect(result.qsoScores[qsos[4].uuid]).toMatchObject({ value: 0, dupe: true, alerts: ["duplicate"] })
   })
 
-  it("the same station on another band or mode is still the same callsign", async () => {
+  it("the same station on another band is a real contact, but not a new callsign", async () => {
     const qsos = [
       ...CALLS.slice(0, 4).map((call, i) => qso({ call, at: at(i) })),
       qso({ call: "YO4RDW", band: "40m", mode: "CW", freq: 7030, at: at(10) }),
     ]
     const result = await score(qsos)
-    expect(result.operationSummary.activation).toMatchObject({ total: 4, activated: false })
+    // Not a dupe — the hunter gets a new band — and the app says so.
+    expect(result.qsoScores[qsos[4].uuid]).toMatchObject({ value: 1, notices: ["newBand"] })
+    expect(result.qsoScores[qsos[4].uuid].dupe).toBeUndefined()
+    // But the counter reads the callsigns, and there are still four.
+    expect(result.operationSummary.activation).toMatchObject({ activated: false, summary: "4/5", activatedRefs: { "RO-H0235": 4 } })
+    expect(result.operationSummary.activation.longSummary).toBe("❌ RO-H0235: 4/5")
+  })
+
+  it("a new mode is the same story, and a fifth callsign then activates", async () => {
+    const qsos = [
+      ...CALLS.slice(0, 4).map((call, i) => qso({ call, at: at(i) })),
+      qso({ call: "DL3KZA", mode: "CW", at: at(10) }),
+      qso({ call: "OK1DEF", at: at(11) }),
+    ]
+    const result = await score(qsos)
+    expect(result.qsoScores[qsos[4].uuid].notices).toEqual(["newMode"])
+    expect(result.operationSummary.activation).toMatchObject({ activated: true, summary: "5 ✓", activatedRefs: { "RO-H0235": 5 } })
+    expect(result.operationSummary.activation.longSummary).toBe("✅ **RO-H0235: 5**")
+    expect(result.daySections[0].scores.activation).toMatchObject({ activated: true, summary: "5 ✓" })
   })
 
   it("the same station on the next UTC day counts again — each day stands alone", async () => {
@@ -103,7 +121,8 @@ describe("HOTA-to-HOTA", () => {
     const qsos = [qso({ call: "YO4RDW", at: at(0), hunted: ["RO-H0142", "RO-H0143"] })]
     const result = await score(qsos)
     expect(result.qsoScores[qsos[0].uuid].value).toBe(4)
-    expect(result.operationSummary.activation.activatedRefs).toEqual({ "RO-H0235": 2 })
+    // Two ADIF records and two HOTA-to-HOTA credits — but one callsign.
+    expect(result.operationSummary.activation.activatedRefs).toEqual({ "RO-H0235": 1 })
   })
 
   it("a pure hunter operation tallies sites hunted", async () => {
@@ -166,6 +185,7 @@ describe("live path — the QSO being typed has no time yet", () => {
       },
       ctx(),
     )
-    expect(result).toEqual({ a: { notices: [], alerts: ["duplicate"] }, b: { notices: [], alerts: [] } })
+    // `a` is the same station on a new band: a contact, not a dupe.
+    expect(result).toEqual({ a: { notices: ["newBand"], alerts: [] }, b: { notices: [], alerts: [] } })
   })
 })
