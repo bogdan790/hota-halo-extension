@@ -2,7 +2,7 @@
   "key": "yo3bee-hota",
   "name": "HOTA — History On The Air",
   "shortName": "HOTA",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Activate and hunt historic sites over 200 years old: HOTA references, spots, activation scoring and ADIF exports for cqhota.app",
   "category": "activity",
   "enabledByDefault": true,

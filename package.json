@@ -1,6 +1,6 @@
 {
   "name": "hota-halo-extension",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "HOTA — History On The Air — activity extension for the Ham2K Logger (HaLo): references, spots, activation scoring and ADIF exports for cqhota.app",
   "keywords": ["ham2k", "halo", "ham radio", "amateur radio", "hota", "history on the air", "extension", "cqhota"],
   "license": "MIT",
