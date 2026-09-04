@@ -6,7 +6,7 @@ on a new machine. The original brief (Romanian) is `docs/BRIEF.ro.md`. Keep the 
 `npm run check` is the whole gate (typecheck + vitest + build + pack). Tests run against the fake
 extension kernel in `test/kernel.ts`. Strings go in `src/i18n/en.json` **and** `ro.json`.
 
-## State on 2026-09-03 — project still in progress
+## State on 2026-09-04 — project still in progress
 - Published: GitHub release v0.1.2 (`yo3bee-hota-0.1.2.h2kext` attached); npm `hota-halo-extension@0.1.2` (0.1.1 was never published; Bogdan runs `npm publish` from an interactive terminal).
   Scoring fix `d4236c7` (distinct callsigns, POTA-style dupes) is on `main` but **not yet released** → released as v0.1.2 on 2026-09-04.
   npm publish must be run by Bogdan from an interactive terminal (npm 2FA via passkey).
@@ -15,11 +15,12 @@ extension kernel in `test/kernel.ts`. Strings go in `src/i18n/en.json` **and** `
   and `docs/BETA-TEST-PLAN.md` (steps marked ✅ verified / ⏳ pending / ⚠ verify).
 - Known: on that build "Install from file…", the `.h2kext` launch argument and drag & drop showed no install dialog;
   manual unzip into `~/.local/share/com.ham2k.logger.next/extensions/yo3bee-hota/` works. Report to Sebastián.
-- **Self-spot is blocked** until cqhota.app deploys the per-user integration key (`X-Integration-Key`, scope
-  `POST /spots` + `GET /me/summary`, generated under My Account → Integration API key). The server side is written
-  and committed in the HOTA.app repo but NOT deployed (Bogdan is still deciding the final shape) — see
-  `~/proiecte/HOTA.app/CLAUDE.md`, section "Extensia Ham2K HaLo + cheia API de integrare".
-- Not yet exercised on the device: spots feed, re-spot, hunter export, ADIF import, H2H on a logged QSO, offline.
+- **Self-spot works end-to-end** since 2026-09-04 (halo-next 26.9.0 build 162): the per-user integration key
+  (`X-Integration-Key`, scope `POST /spots` + `GET /me/summary`, My Account → Integration API key) is live on
+  cqhota.app. Account test, self-spot, QSY, QRT and the spots feed verified — `docs/TEST-REPORT-2026-09-04.md`.
+- Open: the SPOTS row shows a tree glyph instead of `castle` (Sebastián: icons are MDI names or `fa-` Font Awesome);
+  `.h2kext` install dialog still missing on Linux (162 fixed Windows only).
+- Not yet exercised on the device: re-spot, tap-on-spot, hunter export, ADIF import, H2H on a logged QSO, offline.
 
 ## Local dev environment (Bogdan's workstation)
 - HaLo AppImage needs glibc 2.38; Ubuntu 22.04 host → runs in distrobox `halo` (Ubuntu 24.04, created with `--nvidia`):

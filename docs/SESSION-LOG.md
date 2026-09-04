@@ -83,14 +83,39 @@ npm run check          # typecheck + 99 teste + build + pack → yo3bee-hota-<ve
   `CLAUDE.md`, `AGENTS.md`, `README.md`, `docs/BRIEF.ro.md`, `docs/PROMPT.md`, `docs/BETA-TEST-PLAN.md`,
   `docs/TEST-REPORT-2026-09-03.md`, acest jurnal.
 
+### 4 sep 2026, după-amiază — self-spot cap-coadă pe aparat
+- Cheia de integrare a intrat în producție pe cqhota.app: deploy-ul HOTA.app de după-amiază a dus pe server migrarea 022
+  + rutele `X-Integration-Key` (`POST /spots`, `GET /me/summary`) + cardul din My Account. Nit găsit la test și rezolvat
+  în HOTA.app (`ed9b28b`): 401-ul fără header spunea doar „missing X-Api-Key"; acum numește ambele header-e.
+  Verificat live: fără header → 401, cheie inventată → 403, cheia reală → 200 cu `callsign: YO3BEE`.
+- Test pe halo-next 26.9.0 (**162**): cheie generată în My Account → HaLo → Settings → Accounts & Services → HOTA →
+  Test → „Connected as YO3BEE" → Save. Operațiune la RO-H0123, 20 m USB 14300 (14:29Z): self-spot, QSY, QRT prin
+  comentariu — toate trei au apărut corect pe cqhota.app/spots. Panoul SPOTS încarcă feed-ul HOTA; butonul HOTA din
+  rândul de acțiuni apare doar pe operațiunile cu sit HOTA. Raport: `docs/TEST-REPORT-2026-09-04.md`.
+- Observații: (1) în SPOTS rândul HOTA are iconiță de copac (deciduous), deși manifestul și fiecare `Spot` au
+  `icon: "castle"`; (2) instalarea `.h2kext` pe Linux tot nu deschide dialogul (nici pe 162).
+- Mesaj trimis lui Sebastián (după-amiază, scris de Bogdan): ce a intrat în v0.1.2 (cele două fix-uri de scoring, cu
+  commit-urile), self-spot-ul cap-coadă cu cheia de integrare, linkurile către raport și jurnal, plus cele două
+  întrebări (iconița, instalarea pe Linux).
+- Răspunsul lui Sebastián (15:50): „build 162 has double-click for windows, but not linux yet"; iconițe: „any icon from
+  MDI (https://pictogrammers.com/library/mdi/) by name, or any icon from Font Awesome Free
+  (https://fontawesome.com/search) prefixed with fa-"; despre regula celor 5 indicative distincte: „things like this
+  is precisely why I want to have you guys be in charge of your own extensions".
+- **Decizie Bogdan (schimbă decizia de la 00:55):** îi mulțumim și îl rugăm discret, „doar când poate", să adauge HOTA
+  (cqhota.app) și în Ham2K PoLo. Mesajul a fost redactat în această sesiune (Claude) și trimis de Bogdan.
+- Extensia instalată local e build-ul din 3 sep 22:53 (are fix-ul de scoring, dar manifestul zice 0.1.1). De reinstalat
+  din `build/` (0.1.2) la următorul test.
+
 ## Ce urmează (în ordinea probabilă)
-1. Retest pe aparat: același indicativ pe bandă nouă → „New Band", contor neschimbat (fix-ul `d4236c7`, v0.1.2).
-2. Când apare catalogul Ham2K: adaugă HOTA în formatul cerut de Sebastián (manifestul are deja nume/descriere/keywords/icon).
-3. Sesiunea de teste HaLo cu self-spot: deploy pe cqhota (`deploy.sh`) → My Account → Generează cheia → HaLo → Settings →
-   Accounts & Services → HOTA → Test → Save → self-spot → spotul apare pe cqhota.app/spots.
-4. Neverificate încă pe aparat: feed-ul de spoturi, re-spot, exportul hunter, importul ADIF, H2H pe un QSO logat, offline.
-5. Punctele „⚠ verify" rămase din `docs/BETA-TEST-PLAN.md`: semantica `dbLookupSelectAll` a host-ului; `ctx.account` în
-   hook-ul de spoturi (se confirmă la testul de self-spot).
+1. Iconița din SPOTS: încearcă `fa-chess-rook` / `fa-fort-awesome` pe rândurile de spot ca să vezi dacă `Spot.icon` e
+   citit; dacă nu, întreabă-l pe Sebastián de unde ia rândul iconița (tipul de referință?). `castle` există în MDI.
+2. Reinstalează build-ul 0.1.2 în `~/.local/share/com.ham2k.logger.next/extensions/yo3bee-hota/` (manifest 0.1.1 acum).
+3. Retest pe aparat: același indicativ pe bandă nouă → „New Band", contor neschimbat (fix-ul `d4236c7`, v0.1.2).
+4. Când apare catalogul Ham2K: adaugă HOTA în formatul cerut de Sebastián (manifestul are deja nume/descriere/keywords/icon).
+5. Dacă Sebastián acceptă HOTA în PoLo: PR în `ham2k/app-polo` după pattern-ul POTA/WWBOTA, portând din această
+   extensie (data file, spoturi, regula 5 indicative distincte, câmpurile ADIF).
+6. Cu un al doilea operator în eter: tap pe spot → completează situl vânat; re-spot explicit dintr-un QSO logat; H2H.
+7. Neverificate pe aparat: exportul hunter, importul ADIF, offline. Rămâne „⚠ verify": semantica `dbLookupSelectAll`.
 
 ## Contacte și linkuri
 - Sebastián Delmont, Ham2K (autorul PoLo/HaLo) — discuția se poartă pe chat, în engleză.

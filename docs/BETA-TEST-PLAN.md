@@ -112,10 +112,11 @@ generated at cqhota.app → **My Account → Integration API key**, tap test.
 Expected: `✅ Connected as <CALL>`; a wrong key says *cqhota.app rejected this
 integration key*.
 
-**⏳ pending server side** — the integration key (`X-Integration-Key`, scoped
-to `POST /api/v1/spots` and `GET /api/v1/me/summary`) is being added to
-cqhota.app; until it is deployed the account cannot be connected and the
-spot-posting steps below wait. Everything else in this plan works without it.
+**✅ verified 2026-09-04** on halo-next 26.9.0 (162): the integration key is
+live on cqhota.app; Test → *Connected as YO3BEE*; self-spot on RO-H0123
+(14300 USB), a QSY follow-up and a QRT comment all landed on cqhota.app/spots;
+the SPOTS panel loads the HOTA feed. See `TEST-REPORT-2026-09-04.md`.
+Still open there: the row's icon renders as a tree, not `castle`.
 
 Spot yourself on 14.062 CW with a comment. Expected: *Spotted on HOTA at
 RO-H0235*; the spot appears on cqhota.app's Spots page within seconds.
