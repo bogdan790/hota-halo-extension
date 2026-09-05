@@ -103,19 +103,19 @@ npm run check          # typecheck + 99 teste + build + pack → yo3bee-hota-<ve
   is precisely why I want to have you guys be in charge of your own extensions".
 - **Decizie Bogdan (schimbă decizia de la 00:55):** îi mulțumim și îl rugăm discret, „doar când poate", să adauge HOTA
   (cqhota.app) și în Ham2K PoLo. Mesajul a fost redactat în această sesiune (Claude) și trimis de Bogdan.
-- Extensia instalată local e build-ul din 3 sep 22:53 (are fix-ul de scoring, dar manifestul zice 0.1.1). De reinstalat
-  din `build/` (0.1.2) la următorul test.
+- Extensia instalată local e acum build-ul 0.1.2 din `~/Proiecte/hota-halo-extension/build/`, copiat pe 4 sep în
+  `~/.local/share/com.ham2k.logger.next/extensions/yo3bee-hota/` (`index.js` + `manifest.json`, `version: "0.1.2"`).
+  Reinstalare după orice `npm run build`: `cp build/index.js build/manifest.json` în același folder + restart aplicație.
 
 ## Ce urmează (în ordinea probabilă)
 1. Iconița din SPOTS: încearcă `fa-chess-rook` / `fa-fort-awesome` pe rândurile de spot ca să vezi dacă `Spot.icon` e
    citit; dacă nu, întreabă-l pe Sebastián de unde ia rândul iconița (tipul de referință?). `castle` există în MDI.
-2. Reinstalează build-ul 0.1.2 în `~/.local/share/com.ham2k.logger.next/extensions/yo3bee-hota/` (manifest 0.1.1 acum).
-3. Retest pe aparat: același indicativ pe bandă nouă → „New Band", contor neschimbat (fix-ul `d4236c7`, v0.1.2).
-4. Când apare catalogul Ham2K: adaugă HOTA în formatul cerut de Sebastián (manifestul are deja nume/descriere/keywords/icon).
-5. Dacă Sebastián acceptă HOTA în PoLo: PR în `ham2k/app-polo` după pattern-ul POTA/WWBOTA, portând din această
+2. Retest pe aparat: același indicativ pe bandă nouă → „New Band", contor neschimbat (fix-ul `d4236c7`, v0.1.2).
+3. Când apare catalogul Ham2K: adaugă HOTA în formatul cerut de Sebastián (manifestul are deja nume/descriere/keywords/icon).
+4. Dacă Sebastián acceptă HOTA în PoLo: PR în `ham2k/app-polo` după pattern-ul POTA/WWBOTA, portând din această
    extensie (data file, spoturi, regula 5 indicative distincte, câmpurile ADIF).
-6. Cu un al doilea operator în eter: tap pe spot → completează situl vânat; re-spot explicit dintr-un QSO logat; H2H.
-7. Neverificate pe aparat: exportul hunter, importul ADIF, offline. Rămâne „⚠ verify": semantica `dbLookupSelectAll`.
+5. Cu un al doilea operator în eter: tap pe spot → completează situl vânat; re-spot explicit dintr-un QSO logat; H2H.
+6. Neverificate pe aparat: exportul hunter, importul ADIF, offline. Rămâne „⚠ verify": semantica `dbLookupSelectAll`.
 
 ## Contacte și linkuri
 - Sebastián Delmont, Ham2K (autorul PoLo/HaLo) — discuția se poartă pe chat, în engleză.
